@@ -25,12 +25,28 @@ const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
         htmlFor="filter-ongoing"
       >
         Ongoing
+        <input
+          type="radio"
+          name="filter"
+          id="filter-ongoing"
+          value="ongoing"
+          onChange={(e) => setFilterValue(e.target.value)}
+          className="hidden"
+        />
       </label>
       <label
         className={`px-2 py-1 shadow-md rounded-sm ${filterValue === 'overdue' ? 'button-primary' : 'button-disabled'}`}
         htmlFor="filter-overdue"
       >
         Overdue
+        <input
+          type="radio"
+          name="filter"
+          id="filter-overdue"
+          value="overdue"
+          onChange={(e) => setFilterValue(e.target.value)}
+          className="hidden"
+        />
       </label>
       <label
         className={`px-2 py-1 shadow-md rounded-sm ${
@@ -39,32 +55,15 @@ const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
         htmlFor="filter-completed"
       >
         Completed
+        <input
+          type="radio"
+          name="filter"
+          id="filter-completed"
+          value="completed"
+          onChange={(e) => setFilterValue(e.target.value)}
+          className="hidden"
+        />
       </label>
-
-      <input
-        type="radio"
-        name="filter"
-        id="filter-ongoing"
-        value="ongoing"
-        onChange={(e) => setFilterValue(e.target.value)}
-        className="hidden"
-      />
-      <input
-        type="radio"
-        name="filter"
-        id="filter-overdue"
-        value="overdue"
-        onChange={(e) => setFilterValue(e.target.value)}
-        className="hidden"
-      />
-      <input
-        type="radio"
-        name="filter"
-        id="filter-completed"
-        value="completed"
-        onChange={(e) => setFilterValue(e.target.value)}
-        className="hidden"
-      />
     </div>
   );
 };
