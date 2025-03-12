@@ -1,0 +1,82 @@
+@import 'tailwindcss' important;
+
+@layer base {
+  body {
+    @apply m-0 p-0;
+
+    @variant dark {
+      @apply bg-neutral-950 text-white;
+    }
+  }
+}
+
+@layer components {
+  .wrapper {
+    @apply fixed left-0 top-0 w-dvw h-dvh flex justify-center items-center bg-neutral-900/60;
+  }
+
+  .button {
+    @apply px-2 py-1 shadow-md rounded-sm;
+  }
+
+  .button-no-padding {
+    @apply p-0 shadow-md rounded-sm;
+  }
+
+  .button-primary {
+    @apply bg-blue-700 text-white active:bg-blue-800 cursor-pointer;
+  }
+
+  .button-reject {
+    @apply bg-red-700 text-white active:bg-red-800 cursor-pointer;
+  }
+
+  .button-disabled {
+    @apply bg-white text-black dark:bg-neutral-800 dark:text-white;
+  }
+
+  /* Custom react-datepicker */
+  .react-datepicker {
+    @variant dark {
+      @apply bg-neutral-800;
+    }
+  }
+
+  .react-datepicker__header {
+    @variant dark {
+      @apply bg-neutral-950;
+    }
+
+    .react-datepicker__current-month {
+      @variant dark {
+        @apply text-white;
+      }
+    }
+
+    .react-datepicker__day-name {
+      @variant dark {
+        @apply text-white;
+      }
+    }
+  }
+
+  .react-datepicker__month {
+    .react-datepicker__day {
+      @variant dark {
+        @apply text-white;
+      }
+    }
+  }
+
+  .react-datepicker-time__header {
+    @variant dark {
+      @apply text-white;
+    }
+  }
+
+  .react-datepicker__time {
+    @variant dark {
+      @apply bg-neutral-800 text-white;
+    }
+  }
+}
