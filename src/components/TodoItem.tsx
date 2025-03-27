@@ -28,11 +28,11 @@ const TodoItem = memo(({ todo, onCheck, onDelete, onEdit }: TodoItemProps) => {
 
   return (
     <li
-      className={`flex justify-between items-center px-2 ${isOverdue ? 'text-red-600' : ''} ${
-        todo.completed ? 'text-neutral-600 line-through' : ''
-      }`}
+      className={`flex justify-between items-center px-2 hover:bg-blue-100 dark:hover:bg-blue-950 hover:rounded-sm py-1 ${
+        isOverdue ? 'text-red-700' : ''
+      } ${todo.completed ? 'text-neutral-600 line-through' : ''}`}
     >
-      <label className="flex gap-2">
+      <label className="flex gap-2 cursor-pointer grow">
         <input
           type="checkbox"
           name="completed"
@@ -40,7 +40,7 @@ const TodoItem = memo(({ todo, onCheck, onDelete, onEdit }: TodoItemProps) => {
           checked={todo.completed}
           onChange={(e) => onCheck(todo.id, e.target.checked)}
         />
-        <p className="overflow-x-ellipsis" title={todo.content}>
+        <p className="grow" title={todo.content}>
           {todo.content}
         </p>
       </label>
