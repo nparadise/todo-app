@@ -29,7 +29,7 @@ const TodoItem = memo(({ todo, onCheck, onDelete, onEdit }: TodoItemProps) => {
   return (
     <li
       className={`flex justify-between items-center px-2 hover:bg-blue-100 dark:hover:bg-blue-950 hover:rounded-sm py-1 ${
-        isOverdue ? 'text-red-700' : ''
+        isOverdue ? 'text-red-600 dark:text-red-700' : ''
       } ${todo.completed ? 'text-neutral-600 line-through' : ''}`}
     >
       <label className="flex gap-2 cursor-pointer grow">
