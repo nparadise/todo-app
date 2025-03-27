@@ -1,5 +1,5 @@
 import { openDB, type DBSchema } from 'idb';
-import { Todo, TodoWithID } from './types';
+import { Todo } from './types';
 
 const DB_NAME = 'todo-db';
 const STORE_NAME = 'todos';
@@ -31,23 +31,17 @@ export const getTodos = async () => {
   const tx = db.transaction(STORE_NAME, 'readonly');
 
   const [keys, todos] = await Promise.all([tx.store.getAllKeys(), tx.store.getAll(), tx.done]);
-  return new Promise<TodoWithID[]>((resolve, reject) => {
-    if (keys.length !== todos.length) {
-      reject();
-      return;
-    }
-    resolve(
-      todos.map((todo, i) => ({
-        ...todo,
-        id: keys[i],
-      }))
-    );
-  });
+  if (keys.length !== todos.length) {
+    throw new Error('Mismatch between keys and todos length');
+  }
+  return todos.map((todo, i) => ({
+    ...todo,
+    id: keys[i],
+  }));
 };
 
 export const updateTodo = async (todo: Todo, id: number) => {
   const db = await dbPromise;
-  console.log(todo, id);
   return db.put(STORE_NAME, todo, id);
 };
 
@@ -55,15 +49,14 @@ export const updateTodoComplete = async (completed: boolean, id: number): Promis
   const tx = (await dbPromise).transaction(STORE_NAME, 'readwrite');
   const data = await tx.store.get(id);
   if (!data) {
-    throw new Error('No todo with corresponding id: ' + id);
+    throw new Error(`Todo with id ${id} does not exist in the database.`);
   }
   data.completed = completed;
 
-  const [ret] = await Promise.all([tx.store.put(data, id), tx.done]);
+  await tx.store.put(data, id);
+  await tx.done;
 
-  return new Promise((resolve) => {
-    resolve(ret);
-  });
+  return id;
 };
 
 export const deleteTodo = async (id: number) => {
@@ -73,14 +66,10 @@ export const deleteTodo = async (id: number) => {
 
 export const importTodos = async (todos: Todo[]) => {
   const tx = (await dbPromise).transaction(STORE_NAME, 'readwrite');
-  const promises: Promise<unknown>[] = [];
 
-  tx.store.clear();
+  await tx.store.clear();
+  const promises = todos.map((todo) => tx.store.add(todo));
 
-  for (const todo of todos) {
-    promises.push(tx.store.add(todo));
-  }
-  promises.push(tx.done);
-
-  return await Promise.all(promises);
+  await Promise.all(promises);
+  await tx.done;
 };
