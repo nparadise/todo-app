@@ -1,6 +1,8 @@
+import { TodoFilter } from '../hooks/useFilteredTodos';
+
 interface FilterProps {
   filterValue: string;
-  setFilterValue: React.Dispatch<React.SetStateAction<string>>;
+  setFilterValue: React.Dispatch<React.SetStateAction<TodoFilter>>;
 }
 
 const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
@@ -16,7 +18,7 @@ const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
           name="filter"
           id="filter-all"
           value="all"
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => setFilterValue(e.target.value as TodoFilter)}
           className="hidden"
         />
       </label>
@@ -30,7 +32,7 @@ const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
           name="filter"
           id="filter-ongoing"
           value="ongoing"
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => setFilterValue(e.target.value as TodoFilter)}
           className="hidden"
         />
       </label>
@@ -44,7 +46,7 @@ const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
           name="filter"
           id="filter-overdue"
           value="overdue"
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => setFilterValue(e.target.value as TodoFilter)}
           className="hidden"
         />
       </label>
@@ -60,7 +62,7 @@ const Filter = ({ filterValue, setFilterValue }: FilterProps) => {
           name="filter"
           id="filter-completed"
           value="completed"
-          onChange={(e) => setFilterValue(e.target.value)}
+          onChange={(e) => setFilterValue(e.target.value as TodoFilter)}
           className="hidden"
         />
       </label>

@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
+
+import useFilteredTodos from '../hooks/useFilteredTodos';
+import useTodos from '../hooks/useTodos';
 
 import * as db from '../libs/indexedDB';
-import type { Todo, TodoWithID } from '../libs/types';
+import type { Todo } from '../libs/types';
 
 import ExportTodos from './ExportTodos';
 import Filter from './Filter';
@@ -18,50 +21,11 @@ enum PageState {
 }
 
 const TodoList = () => {
-  const [todoList, setTodoList] = useState<TodoWithID[]>([]);
-  const [filterValue, setFilterValue] = useState<string>('all');
+  const { todoList, addTodo, editTodo, deleteTodo, checkTodo, setTodoList } = useTodos();
   const [pageState, setPageState] = useState<PageState>(PageState.idle);
   const [todoIdToUpdate, setTodoIdToUpdate] = useState<number>(-1);
 
-  const filteredTodoList = useMemo(
-    () =>
-      todoList
-        .filter((todo) => {
-          switch (filterValue) {
-            case 'ongoing':
-              return !todo.completed;
-            case 'overdue':
-              return todo.dueDate.valueOf() < Date.now() && !todo.completed;
-            case 'completed':
-              return todo.completed;
-            case 'all':
-              return true;
-            default:
-              throw new Error('Invalid filter value');
-          }
-        })
-        .sort((a, b) => a.dueDate.valueOf() - b.dueDate.valueOf()),
-    [filterValue, todoList]
-  );
-
-  useEffect(() => {
-    db.getTodos().then((todos) => {
-      setTodoList(todos);
-    });
-  }, []);
-
-  const handleCheck = useCallback((id: number, completed: boolean) => {
-    db.updateTodoComplete(completed, id).then(() => {
-      setTodoList((prev) =>
-        prev.map((todo) => {
-          if (todo.id === id) {
-            return { ...todo, completed: completed };
-          }
-          return todo;
-        })
-      );
-    });
-  }, []);
+  const { filterValue, setFilterValue, filteredTodoList } = useFilteredTodos(todoList);
 
   const handleCloseModal = useCallback(() => {
     setPageState(PageState.idle);
@@ -79,33 +43,22 @@ const TodoList = () => {
     setPageState(PageState.edit);
   }, []);
 
-  const addTodo = useCallback((todo: Todo) => {
-    db.addTodo(todo).then((id) => {
-      setTodoList((prev) => [...prev, { ...todo, id }]);
-    });
-    setPageState(PageState.idle);
-  }, []);
+  const handleSubmitAdd = useCallback(
+    (todo: Todo) => {
+      addTodo(todo);
+      setPageState(PageState.idle);
+    },
+    [addTodo]
+  );
 
-  const editTodo = useCallback((id: number, updatedTodo: Todo) => {
-    db.updateTodo(updatedTodo, id).then(() => {
-      setTodoList((prev) =>
-        prev.map((todo) => {
-          if (todo.id === id) {
-            return { ...updatedTodo, id };
-          }
-          return todo;
-        })
-      );
-    });
-    setPageState(PageState.idle);
-    setTodoIdToUpdate(-1);
-  }, []);
-
-  const handleClickDelete = useCallback((id: number) => {
-    db.deleteTodo(id).then(() => {
-      setTodoList((prev) => prev.filter((todo) => todo.id !== id));
-    });
-  }, []);
+  const handleSubmitEdit = useCallback(
+    (id: number, updatedTodo: Todo) => {
+      editTodo(id, updatedTodo);
+      setPageState(PageState.idle);
+      setTodoIdToUpdate(-1);
+    },
+    [editTodo]
+  );
 
   return (
     <>
@@ -121,8 +74,8 @@ const TodoList = () => {
             <TodoItem
               key={todo.id}
               todo={todo}
-              onCheck={handleCheck}
-              onDelete={handleClickDelete}
+              onCheck={checkTodo}
+              onDelete={deleteTodo}
               onEdit={handleClickEdit}
             />
           ))}
@@ -136,12 +89,10 @@ const TodoList = () => {
           </button>
         </div>
       </main>
-      {pageState === PageState.add ? (
-        <TodoEditor onSubmit={addTodo} onCancel={() => setPageState(PageState.idle)} />
-      ) : null}
+      {pageState === PageState.add ? <TodoEditor onSubmit={handleSubmitAdd} onCancel={handleCloseModal} /> : null}
       {pageState === PageState.edit ? (
         <TodoEditor
-          onSubmit={editTodo.bind(null, todoIdToUpdate)}
+          onSubmit={handleSubmitEdit.bind(null, todoIdToUpdate)}
           onCancel={handleCloseModal}
           editTodo={todoList.find((v) => v.id === todoIdToUpdate)}
         />

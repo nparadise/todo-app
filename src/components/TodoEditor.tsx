@@ -41,7 +41,6 @@ const TodoEditor = ({ onSubmit, onCancel, editTodo }: TodoAdderProps) => {
         </div>
         <div className="text-black dark:text-white">
           Due:
-          {/* <input className="ps-2" type="datetime-local" value={dueDate} onChange={(e) => setDueDate(e.target.value)} /> */}
           <DatePicker
             showTimeSelect
             selected={dueDate}
